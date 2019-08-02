@@ -38,8 +38,8 @@ export class App extends React.Component<any, AppState> {
           <TabBar.Item
             key="route"
             title="路线"
-            icon={<Icon type="icon-luxian" size="md" color={color}></Icon>}
-            selectedIcon={<Icon type="icon-luxian" size="md" color={selectedColor}></Icon>}
+            icon={<Icon type="icon-route" size="md" color={color}></Icon>}
+            selectedIcon={<Icon type="icon-route" size="md" color={selectedColor}></Icon>}
             selected={this.state.selected === 'route'}
             onPress={() => this.setState({ selected: 'route' })}
           >

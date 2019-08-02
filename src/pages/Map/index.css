@@ -18,20 +18,31 @@
   flex-grow: 1;
 }
 
-.map .locate {
-  left: 15px;
-  bottom: 30px;
+.map .button {
   width: 36px;
   height: 36px;
   box-shadow: 0px 0px 5px rgba(0,0,0,.2);
 }
-
-.map .locate .am-button-icon {
+.map .button .am-button-icon {
   margin-right: 0;
 }
-
+.map .locate {
+  left: 15px;
+  bottom: 30px;
+}
+.map .traffic {
+  top: 60px;
+  right: 15px;
+  background-color: rgba(0,0,0,.4);
+}
+.map .satellite {
+  top: 100px;
+  right: 15px;
+  background-color: rgba(0,0,0,.4);
+}
 .map .zoom {
   position: absolute;
   right: 15px;
   bottom: 30px;
 }
+

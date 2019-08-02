@@ -5,21 +5,29 @@ import './index.css';
 
 export interface MapState {
   isLocating: boolean;
+  hasTraffic: boolean;
+  hasSatellite: boolean;
 }
 
 const AMap = (window as any).AMap;
 let mapObj: any;
 let geolocation: any;
+let roadNetLayer: any;
+let satelliteLayer: any;
 export class Map extends React.Component<any, MapState> {
   constructor(props: any) {
     super(props);
     
     this.state = {
       isLocating: false,
+      hasTraffic: false,
+      hasSatellite: false,
     };
 
     this.handlePositionClick = this.handlePositionClick.bind(this);
     this.handleZoomChange = this.handleZoomChange.bind(this);
+    this.handleTrafficClick = this.handleTrafficClick.bind(this);
+    this.handleSatelliteClick = this.handleSatelliteClick.bind(this);
   }
 
   componentDidMount() {
@@ -42,17 +50,56 @@ export class Map extends React.Component<any, MapState> {
     });
   }
 
+  /**
+   * 定位按钮点击事件处理
+   */
   handlePositionClick() {
     this.setState({ isLocating: true });
     geolocation.getCurrentPosition();
   }
 
+  /**
+   * 缩放改变事件处理
+   * @param index 按钮位置
+   * @param event 事件对象
+   */
   handleZoomChange(index: number, event: React.SyntheticEvent) {
-    if (index === 0) { // 方法
+    if (index === 0) { // 放大
       mapObj.zoomIn();
-    } else if (index === 1) {
+    } else if (index === 1) { // 缩小
       mapObj.zoomOut();
     }
+  }
+
+  /**
+   * 开关路况事件处理
+   */
+  handleTrafficClick() {
+    if (!roadNetLayer) {
+      roadNetLayer = new AMap.TileLayer.Traffic({
+        map: mapObj,
+      });
+    }
+    if (!this.state.hasTraffic) {
+      roadNetLayer.show();
+    } else {
+      roadNetLayer.hide();
+    }
+    this.setState(state => ({ hasTraffic: !state.hasTraffic }));
+  }
+
+  handleSatelliteClick() {
+    if (!satelliteLayer) {
+      satelliteLayer = new AMap.TileLayer.Satellite({
+        map: mapObj,
+      });
+    }
+    if (!this.state.hasSatellite) {
+      satelliteLayer.show();
+    } else {
+      satelliteLayer.hide();
+    }
+    this.setState(state => ({ hasSatellite: !state.hasSatellite }));
   }
 
   render() {
@@ -61,16 +108,30 @@ export class Map extends React.Component<any, MapState> {
         <SearchBar className="search" placeholder="查找地点、公交、地铁"></SearchBar>
         <div id="container"></div>
         <Button
-          className="locate"
+          className="button locate"
           loading={this.state.isLocating}
           icon="icon-dingwei"
           style={{position: 'absolute', color: '#0091FF'}}
           onClick={this.handlePositionClick}
         >
         </Button>
+        <Button
+          className="button traffic"
+          icon={this.state.hasTraffic ? 'icon-lukuang_select' : 'icon-lukuang'}
+          style={{position: 'absolute'}}
+          onClick={this.handleTrafficClick}
+        >
+        </Button>
+        <Button
+          className="button satellite"
+          icon={this.state.hasSatellite ? 'icon-weixing' : 'icon-tuceng'}
+          style={{position: 'absolute'}}
+          onClick={this.handleSatelliteClick}
+        >
+        </Button>
         <GroupButtons
           className="zoom"
-          icons={['icon-hao', 'icon--hao']}
+          icons={['plus', 'minus']}
           onChange={this.handleZoomChange}
         >
         </GroupButtons>
