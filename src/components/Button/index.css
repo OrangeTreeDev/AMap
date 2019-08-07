@@ -1,0 +1,44 @@
+.slx-button {
+  display: block;
+  height: 47px;
+  line-height: 47px;
+  font-size: 18px;
+  color: #000;
+  text-align: center;
+  
+  background-color: #fff;
+}
+
+.slx-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slx-button-small {
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+}
+
+.slx-button-inline {
+  display: inline-block;
+  padding: 0 15px;
+}
+
+.slx-button-border {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.slx-button > .slx-button-button-icon {
+  margin-right: 0.5em;
+}
+
+.slx-button-inline.slx-button-icon {
+  display: inline-flex;
+}
+
+.slx-button.slx-button-active {
+  background-color: #ddd; 
+}

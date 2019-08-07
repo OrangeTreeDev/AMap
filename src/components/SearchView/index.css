@@ -1,0 +1,35 @@
+.search-view {
+  position: relative;
+}
+
+.search-view .search-bar {
+  background-color: rgb(61, 146, 251);
+}
+.search-view .search-bar .am-search-input {
+  background-color: #357fdb;
+}
+.search-view .search-bar .am-search-cancel {
+  color: #fff;
+}
+
+.search-view .search-list {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.2);
+}
+
+.search-view .search-list-tools {
+  display: flex;
+}
+.search-view .search-list-clear {
+  flex-grow: 1;
+  font-size: 16px;
+  color: #666;
+  border-right: 1px solid #ddd;
+}
+.search-view .search-list-fold {
+  width: 57px;
+}

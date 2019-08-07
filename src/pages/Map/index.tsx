@@ -1,12 +1,14 @@
 import React from 'react';
-import { SearchBar, Button } from 'antd-mobile';
+import { Button } from 'antd-mobile';
 import { GroupButtons } from '../../components/GroupButtons';
+import { SearchView } from '../../components/SearchView';
 import './index.css';
 
 export interface MapState {
-  isLocating: boolean;
-  hasTraffic: boolean;
-  hasSatellite: boolean;
+  isLocating: boolean; // 正在定位
+  hasTraffic: boolean; // 显示路况
+  hasSatellite: boolean; // 显示卫星图
+  tips: any[]; // 搜索提示
 }
 
 const AMap = (window as any).AMap;
@@ -15,6 +17,9 @@ let geolocation: any;
 let roadNetLayer: any;
 let satelliteLayer: any;
 export class Map extends React.Component<any, MapState> {
+  private autoComplete: any;
+  private placeSearch: any;
+
   constructor(props: any) {
     super(props);
     
@@ -22,18 +27,22 @@ export class Map extends React.Component<any, MapState> {
       isLocating: false,
       hasTraffic: false,
       hasSatellite: false,
+      tips: [],
     };
 
     this.handlePositionClick = this.handlePositionClick.bind(this);
     this.handleZoomChange = this.handleZoomChange.bind(this);
     this.handleTrafficClick = this.handleTrafficClick.bind(this);
     this.handleSatelliteClick = this.handleSatelliteClick.bind(this);
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handlePlaceSearch = this.handlePlaceSearch.bind(this);
   }
 
   componentDidMount() {
     mapObj = new AMap.Map('container', {
-      zoom: 17
+      level: 17
     });
+    // 定位插件
     mapObj.plugin('AMap.Geolocation', () => {
       geolocation = new AMap.Geolocation({
         enableHighAccuracy: true,//是否使用高精度定位，默认:true
@@ -48,6 +57,17 @@ export class Map extends React.Component<any, MapState> {
       AMap.event.addListener(geolocation, 'complete', () => this.setState({ isLocating: false }));
       AMap.event.addListener(geolocation, 'complete', () => this.setState({ isLocating: false }));
     });
+    
+    AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], () => {
+      // 输入提示插件
+      this.autoComplete = new AMap.Autocomplete({
+        city: '上海'
+      });
+      // POI搜索插件
+      this.placeSearch = new AMap.PlaceSearch({
+        city: '上海'
+      });
+    });   
   }
 
   /**
@@ -102,10 +122,38 @@ export class Map extends React.Component<any, MapState> {
     this.setState(state => ({ hasSatellite: !state.hasSatellite }));
   }
 
+  /**
+   * 搜索框内容改变事件处理
+   * @param keyword 搜索关键字
+   */
+  handleSearchChange(keyword: string) {
+    this.autoComplete.search(keyword, (status: string, result: any) => {
+      this.setState({
+        tips: status === 'complete' ? result.tips : []
+      });
+    });
+  }
+
+  /**
+   * 点击搜索提示处理
+   * @param place 
+   */
+  handlePlaceSearch(place: string) {
+    this.placeSearch.search(place, (status: string, result: any) => {
+      console.log(result);
+    });
+  }
+
   render() {
     return (
       <div className="map">
-        <SearchBar className="search" placeholder="查找地点、公交、地铁"></SearchBar>
+        <SearchView
+          onChange={this.handleSearchChange}
+          onSelect={this.handlePlaceSearch}
+          onSubmit={this.handlePlaceSearch}
+          tips={this.state.tips}
+        >
+        </SearchView>
         <div id="container"></div>
         <Button
           className="button locate"

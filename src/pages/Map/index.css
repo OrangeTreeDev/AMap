@@ -4,16 +4,6 @@
   height: 100%;
 }
 
-.map .search {
-  background-color: rgb(61, 146, 251);
-}
-.map .search .am-search-input {
-  background-color: #357fdb;
-}
-.map .search .am-search-cancel {
-  color: #fff;
-}
-
 .map #container {
   flex-grow: 1;
 }

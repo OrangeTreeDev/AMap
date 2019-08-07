@@ -6,10 +6,14 @@
   overflow: hidden;
 }
 
+.icon-lg {
+  font-size: 36px;
+}
+
 .icon-md {
   font-size: 22px;
 }
 
-.icon-lg {
-  font-size: 36px;
+.icon-xxs {
+  font-size: 15px;
 }

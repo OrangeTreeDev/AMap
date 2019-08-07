@@ -5,7 +5,7 @@ import './index.css';
 export interface SymbolIconProps {
   className?: string;
   type: string;
-  size?: 'md' | 'lg';
+  size?: 'md' | 'lg' | 'xxs';
   color?: string;
 };
 
