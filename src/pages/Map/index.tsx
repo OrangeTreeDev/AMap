@@ -108,6 +108,9 @@ export class Map extends React.Component<any, MapState> {
     this.setState(state => ({ hasTraffic: !state.hasTraffic }));
   }
 
+  /**
+   * 开关卫星图像事件处理
+   */
   handleSatelliteClick() {
     if (!satelliteLayer) {
       satelliteLayer = new AMap.TileLayer.Satellite({
@@ -128,8 +131,9 @@ export class Map extends React.Component<any, MapState> {
    */
   handleSearchChange(keyword: string) {
     this.autoComplete.search(keyword, (status: string, result: any) => {
+      console.log(result);
       this.setState({
-        tips: status === 'complete' ? result.tips : []
+        tips: status === 'complete' ? result.tips.slice(0, 10) : []
       });
     });
   }

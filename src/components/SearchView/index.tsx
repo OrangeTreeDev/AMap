@@ -20,13 +20,20 @@ export class SearchView extends React.Component<SearchViewProps, SearchViewState
     this.state = {
       isFocus: false
     };
+
+    this.handleListItemClick = this.handleListItemClick.bind(this);
+  }
+
+  handleListItemClick() {
+    // this.props.onSelect(place);
+    console.log('click');
   }
 
   render() {
     const { isFocus } = this.state;
     const { tips, onSelect, ...restProps } = this.props;
-    const tipListEl = tips.map((tip) => {
-      return <List.Item key={tip.id} onClick={() => onSelect(tip.name)}>{tip.name}</List.Item>;
+    const tipListEl = tips.map((tip, index) => {
+      return <List.Item key={index} onClick={this.handleListItemClick}>{tip.name}</List.Item>;
     });
     return (
       <div className="search-view">
