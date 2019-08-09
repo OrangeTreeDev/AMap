@@ -1,7 +1,7 @@
 .map {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - 45px);
 }
 
 .map #container {
@@ -21,12 +21,12 @@
   bottom: 30px;
 }
 .map .traffic {
-  top: 60px;
+  top: 90px;
   right: 15px;
   background-color: rgba(0,0,0,.4);
 }
 .map .satellite {
-  top: 100px;
+  top: 135px;
   right: 15px;
   background-color: rgba(0,0,0,.4);
 }

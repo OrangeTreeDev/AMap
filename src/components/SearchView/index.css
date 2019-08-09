@@ -2,6 +2,16 @@
   position: relative;
 }
 
+.search-view .am-search {
+  height: 30px;
+  align-items: flex-end;
+  padding-bottom: 8px;
+}
+.search-view .am-search-cancel {
+  height: 30px;
+  line-height: 30px;
+}
+
 .search-view .search-bar {
   background-color: rgb(61, 146, 251);
 }
@@ -14,7 +24,7 @@
 
 .search-view .search-list {
   position: absolute;
-  top: 44px;
+  top: 38px;
   left: 0;
   right: 0;
   z-index: 1;
