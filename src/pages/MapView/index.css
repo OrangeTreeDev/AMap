@@ -1,0 +1,43 @@
+.search-map-view {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-map-view #map-container {
+  flex-grow: 1;
+}
+
+.search-map-view .card {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 30px;
+  border-radius: 3px;
+  background-color: #ffffff;
+  box-shadow: 0 0 5px rgba(0,0,0,.2);
+}
+
+.search-map-view .card .info {
+  height: 40px;
+  padding: 15px 10px;
+}
+
+.search-map-view .card .name {
+  color: #000;
+  font-size: 16px;
+}
+
+.search-map-view .card .address {
+  margin-top: 8px;
+  color: #999;
+  font-size: 13px;
+}
+
+.search-map-view .card .action {
+  display: flex;
+  margin: 0 15px;
+  justify-content: space-around;
+  border-top: 1px solid rgb(232, 232, 232);
+  color: #666;
+}

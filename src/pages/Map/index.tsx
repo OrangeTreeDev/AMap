@@ -1,22 +1,17 @@
 import React from 'react';
-import { Button } from 'antd-mobile';
-import { GroupButtons } from '../../components/GroupButtons';
+import { MapContainer } from '../../components/MapContainer';
 import { SearchView } from '../../components/SearchView';
 import './index.css';
+import { RouteComponentProps } from 'react-router';
 
-export interface MapState {
-  isLocating: boolean; // 正在定位
-  hasTraffic: boolean; // 显示路况
-  hasSatellite: boolean; // 显示卫星图
+interface MapState {
   tips: any[]; // 搜索提示
 }
 
 const AMap = (window as any).AMap;
 let mapObj: any;
 let geolocation: any;
-let roadNetLayer: any;
-let satelliteLayer: any;
-export class Map extends React.Component<any, MapState> {
+export class Map extends React.Component<RouteComponentProps<any>, MapState> {
   private autoComplete: any;
   private placeSearch: any;
 
@@ -24,23 +19,18 @@ export class Map extends React.Component<any, MapState> {
     super(props);
     
     this.state = {
-      isLocating: false,
-      hasTraffic: false,
-      hasSatellite: false,
       tips: [],
     };
 
-    this.handlePositionClick = this.handlePositionClick.bind(this);
-    this.handleZoomChange = this.handleZoomChange.bind(this);
-    this.handleTrafficClick = this.handleTrafficClick.bind(this);
-    this.handleSatelliteClick = this.handleSatelliteClick.bind(this);
     this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.handlePlaceSearch = this.handlePlaceSearch.bind(this);
+    this.handleSearchSelect = this.handleSearchSelect.bind(this);
+    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
   }
 
   componentDidMount() {
     mapObj = new AMap.Map('container', {
-      level: 17
+      level: 17,
+      dragEnable: true,
     });
     // 定位插件
     mapObj.plugin('AMap.Geolocation', () => {
@@ -54,8 +44,6 @@ export class Map extends React.Component<any, MapState> {
       });
       mapObj.addControl(geolocation);
       geolocation.getCurrentPosition();
-      AMap.event.addListener(geolocation, 'complete', () => this.setState({ isLocating: false }));
-      AMap.event.addListener(geolocation, 'complete', () => this.setState({ isLocating: false }));
     });
     
     AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], () => {
@@ -67,62 +55,7 @@ export class Map extends React.Component<any, MapState> {
       this.placeSearch = new AMap.PlaceSearch({
         city: '上海'
       });
-    });   
-  }
-
-  /**
-   * 定位按钮点击事件处理
-   */
-  handlePositionClick() {
-    this.setState({ isLocating: true });
-    geolocation.getCurrentPosition();
-  }
-
-  /**
-   * 缩放改变事件处理
-   * @param index 按钮位置
-   * @param event 事件对象
-   */
-  handleZoomChange(index: number, event: React.SyntheticEvent) {
-    if (index === 0) { // 放大
-      mapObj.zoomIn();
-    } else if (index === 1) { // 缩小
-      mapObj.zoomOut();
-    }
-  }
-
-  /**
-   * 开关路况事件处理
-   */
-  handleTrafficClick() {
-    if (!roadNetLayer) {
-      roadNetLayer = new AMap.TileLayer.Traffic({
-        map: mapObj,
-      });
-    }
-    if (!this.state.hasTraffic) {
-      roadNetLayer.show();
-    } else {
-      roadNetLayer.hide();
-    }
-    this.setState(state => ({ hasTraffic: !state.hasTraffic }));
-  }
-
-  /**
-   * 开关卫星图像事件处理
-   */
-  handleSatelliteClick() {
-    if (!satelliteLayer) {
-      satelliteLayer = new AMap.TileLayer.Satellite({
-        map: mapObj,
-      });
-    }
-    if (!this.state.hasSatellite) {
-      satelliteLayer.show();
-    } else {
-      satelliteLayer.hide();
-    }
-    this.setState(state => ({ hasSatellite: !state.hasSatellite }));
+    });
   }
 
   /**
@@ -142,51 +75,33 @@ export class Map extends React.Component<any, MapState> {
    * 点击搜索提示处理
    * @param place 
    */
-  handlePlaceSearch(place: string) {
-    this.placeSearch.search(place, (status: string, result: any) => {
-      console.log(result);
-    });
+  handleSearchSelect(place: any) {
+    sessionStorage.setItem('place_search', JSON.stringify(place));
+    this.props.history.push(`/search/mapview?keywords=${place.name}`);
+  }
+  
+  /**
+   * 搜索提交处理
+   * @param place 
+   */
+  handleSearchSubmit(place: string) {
   }
 
   render() {
+    const searchView = (
+      <SearchView
+        onChange={this.handleSearchChange}
+        onSelect={this.handleSearchSelect}
+        onSubmit={this.handleSearchSubmit}
+        tips={this.state.tips}
+      >
+      </SearchView>
+    );
+
     return (
       <div className="map">
-        <SearchView
-          onChange={this.handleSearchChange}
-          onSelect={this.handlePlaceSearch}
-          onSubmit={this.handlePlaceSearch}
-          tips={this.state.tips}
-        >
-        </SearchView>
-        <div id="container"></div>
-        <Button
-          className="button locate"
-          loading={this.state.isLocating}
-          icon="icon-dingwei"
-          style={{position: 'absolute', color: '#0091FF'}}
-          onClick={this.handlePositionClick}
-        >
-        </Button>
-        <Button
-          className="button traffic"
-          icon={this.state.hasTraffic ? 'icon-lukuang_select' : 'icon-lukuang'}
-          style={{position: 'absolute'}}
-          onClick={this.handleTrafficClick}
-        >
-        </Button>
-        <Button
-          className="button satellite"
-          icon={this.state.hasSatellite ? 'icon-weixing' : 'icon-tuceng'}
-          style={{position: 'absolute'}}
-          onClick={this.handleSatelliteClick}
-        >
-        </Button>
-        <GroupButtons
-          className="zoom"
-          icons={['plus', 'minus']}
-          onChange={this.handleZoomChange}
-        >
-        </GroupButtons>
+        <MapContainer header={searchView}>
+        </MapContainer>
       </div>
     );
   }

@@ -1,0 +1,38 @@
+.map-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.map-container #map {
+  flex-grow: 1;
+}
+
+.map-container .button {
+  width: 36px;
+  height: 36px;
+  box-shadow: 0px 0px 5px rgba(0,0,0,.2);
+}
+.map-container .button .am-button-icon {
+  margin-right: 0;
+}
+.map-container .locate {
+  left: 15px;
+  bottom: 30px;
+}
+.map-container .traffic {
+  top: 90px;
+  right: 15px;
+  background-color: rgba(0,0,0,.4);
+}
+.map-container .satellite {
+  top: 135px;
+  right: 15px;
+  background-color: rgba(0,0,0,.4);
+}
+.map-container .zoom {
+  position: absolute;
+  right: 15px;
+  bottom: 30px;
+}

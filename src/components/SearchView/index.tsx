@@ -15,33 +15,43 @@ export interface SearchViewProps {
 }
 
 export class SearchView extends React.Component<SearchViewProps, SearchViewState> {
+  private blurTimer: any;
+
   constructor(props: any) {
     super(props);
     this.state = {
       isFocus: false
     };
 
-    this.handleListItemClick = this.handleListItemClick.bind(this);
+    this.handleSearchInputBlur = this.handleSearchInputBlur.bind(this);
   }
 
-  handleListItemClick() {
-    // this.props.onSelect(place);
-    console.log('click');
+  componentWillUnmount() {
+    clearTimeout(this.blurTimer);
+  }
+
+  handleSearchInputBlur() {
+    // 解决blur 与 click事件冲突问题
+    this.blurTimer = setTimeout(() => {
+      this.setState({isFocus: false})
+    }, 100);
   }
 
   render() {
     const { isFocus } = this.state;
     const { tips, onSelect, ...restProps } = this.props;
+
     const tipListEl = tips.map((tip, index) => {
-      return <List.Item key={index} onClick={this.handleListItemClick}>{tip.name}</List.Item>;
+      return <List.Item key={index} onClick={() => onSelect(tip)}>{tip.name}</List.Item>;
     });
+
     return (
       <div className="search-view">
         <SearchBar
           className="search-bar"
           placeholder="查找地点、公交、地铁"
           onFocus={() => this.setState({isFocus: true})}
-          onBlur={() => this.setState({isFocus: false})}
+          onBlur={this.handleSearchInputBlur}
           {...restProps}
         >
         </SearchBar>

@@ -8,6 +8,7 @@ export interface GroupButtonsProps {
   className?: string;
   activeClassName?: string;
   icons: string[];
+  style?: object;
   size?: 'md' | 'lg';
   iconColor?: string;
   onChange?: (index: number, event: React.SyntheticEvent) => void,
@@ -29,6 +30,9 @@ export class GroupButtons extends React.Component<GroupButtonsProps, {}> {
       activeClassName,
       icons,
       size,
+      iconColor,
+      onChange,
+      ...restProps
     } = this.props;
 
     const buttonsEl = icons.map((icon, index) => {
@@ -51,7 +55,7 @@ export class GroupButtons extends React.Component<GroupButtonsProps, {}> {
     );
 
     return (
-      <div className={groupButtonsCls}>
+      <div className={groupButtonsCls} {...restProps}>
         {buttonsEl}
       </div>
     );
