@@ -23,6 +23,7 @@ export interface ButtonProps {
   icon?: React.ReactElement | string;
   size?: 'large' | 'small';
   inline?: boolean;
+  onClick?(): void;
 }
 export class Button extends React.Component<ButtonProps, any> {
   static defaultProps = {
@@ -38,6 +39,7 @@ export class Button extends React.Component<ButtonProps, any> {
       icon,
       size,
       inline,
+      ...restProps
     } = this.props;
 
     const wrapCls = classnames(
@@ -78,7 +80,7 @@ export class Button extends React.Component<ButtonProps, any> {
     return (
       <TouchFeadback activeClassName={activeClassName || 'slx-button-active'}>
         {/* eslint-disable-next-line */}
-        <a className={wrapCls}>
+        <a className={wrapCls} {...restProps}>
           {iconEl}
           {kids}
         </a>

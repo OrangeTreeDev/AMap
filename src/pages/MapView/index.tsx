@@ -44,11 +44,11 @@ export class MapView extends React.Component<{}, MapViewState> {
   }
 
   componentDidMount() {
-    const placeTipStr: string | null = sessionStorage.getItem('place_search');
-    if (placeTipStr) {
-      const placeTip: PlaceTip = JSON.parse(placeTipStr);
+    const searchHistoryCache: string | null = sessionStorage.getItem('search_history');
+    if (searchHistoryCache) {
+      const searchHistory: Array<PlaceTip> = JSON.parse(searchHistoryCache);
       this.setState({
-        placeTip: placeTip
+        placeTip: searchHistory[searchHistory.length - 1]
       });
     }
   }

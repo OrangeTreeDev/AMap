@@ -1,30 +1,39 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router';
+import { Modal } from 'antd-mobile';
 import { MapContainer } from '../../components/MapContainer';
 import { SearchView } from '../../components/SearchView';
+import { PlaceTip } from '../../declare';
 import './index.css';
-import { RouteComponentProps } from 'react-router';
 
 interface MapState {
   tips: any[]; // 搜索提示
+  isTipShown: boolean;
 }
 
 const AMap = (window as any).AMap;
+const SEARCH_HISTORY_ITEM = 'search_history';
 let mapObj: any;
 let geolocation: any;
 export class Map extends React.Component<RouteComponentProps<any>, MapState> {
   private autoComplete: any;
+  private blurTimer: any;
   private placeSearch: any;
 
   constructor(props: any) {
     super(props);
     
     this.state = {
-      tips: [],
+      tips: this.getSearchHistory().reverse(),
+      isTipShown: false
     };
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSearchSelect = this.handleSearchSelect.bind(this);
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+    this.handleClearClick = this.handleClearClick.bind(this);
+    this.handleSearchFocus = this.handleSearchFocus.bind(this);
+    this.handleSearchBlur = this.handleSearchBlur.bind(this);
   }
 
   componentDidMount() {
@@ -58,28 +67,92 @@ export class Map extends React.Component<RouteComponentProps<any>, MapState> {
     });
   }
 
+  componentWillUnmount() {
+
+  }
+
+  getSearchHistory(): Array<PlaceTip> {
+    const searchHistoryCache: string | null = sessionStorage.getItem(SEARCH_HISTORY_ITEM);
+    return searchHistoryCache ? JSON.parse(searchHistoryCache) : [];
+  }
+
   /**
    * 搜索框内容改变事件处理
    * @param keyword 搜索关键字
    */
   handleSearchChange(keyword: string) {
-    this.autoComplete.search(keyword, (status: string, result: any) => {
-      console.log(result);
-      this.setState({
-        tips: status === 'complete' ? result.tips.slice(0, 10) : []
+    if(keyword) {
+      this.autoComplete.search(keyword, (status: string, result: any) => {
+        this.setState({
+          tips: status === 'complete' ? result.tips.slice(0, 10) : []
+        });
       });
-    });
+    } else {
+      this.setState({
+        tips: this.getSearchHistory().reverse()
+      });
+    }
   }
 
   /**
    * 点击搜索提示处理
    * @param place 
    */
-  handleSearchSelect(place: any) {
-    sessionStorage.setItem('place_search', JSON.stringify(place));
-    this.props.history.push(`/search/mapview?keywords=${place.name}`);
+  handleSearchSelect(placeTip: PlaceTip) {
+    // 删除相同名称的搜索提示，添加新增的搜索提示
+    let searchHistory: Array<PlaceTip> = this.getSearchHistory();
+    const index: number = searchHistory.findIndex((item) => item.name === placeTip.name);
+    if(index !== -1) {
+      searchHistory.splice(index, 1);
+    }
+    searchHistory.push(placeTip);
+    // 缓存已选的搜索提示到搜索记录中
+    sessionStorage.setItem(SEARCH_HISTORY_ITEM, JSON.stringify(searchHistory));
+    // 跳转到位置详情页
+    this.props.history.push(`/search/mapview?keywords=${placeTip.name}`);
   }
-  
+
+  /**
+   * 清除按钮点击处理
+   */
+  handleClearClick() {
+    this.setState({
+      isTipShown: true
+    });
+    Modal.alert('', '清空历史记录', [
+      {text: '取消', onPress: undefined},
+      {
+        text: '清空',
+        onPress: () => {
+          sessionStorage.removeItem(SEARCH_HISTORY_ITEM);
+          this.setState({
+            tips: []
+          });
+        }
+      },
+    ]);
+  }
+
+  /**
+   * 搜索输入框聚焦处理
+   */
+  handleSearchFocus() {
+    this.setState({
+      isTipShown: true
+    });
+  }
+
+  /**
+   * 搜索输入框失去焦点处理
+   */
+  handleSearchBlur() {
+    this.blurTimer = setTimeout(() => {
+      this.setState({
+        isTipShown: false
+      });
+    }, 100);
+  }
+
   /**
    * 搜索提交处理
    * @param place 
@@ -93,7 +166,11 @@ export class Map extends React.Component<RouteComponentProps<any>, MapState> {
         onChange={this.handleSearchChange}
         onSelect={this.handleSearchSelect}
         onSubmit={this.handleSearchSubmit}
+        onFocus={this.handleSearchFocus}
+        onBlur={this.handleSearchBlur}
+        onClear={this.handleClearClick}
         tips={this.state.tips}
+        isTipShown={this.state.isTipShown}
       >
       </SearchView>
     );
